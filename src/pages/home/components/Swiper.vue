@@ -1,6 +1,6 @@
 <template>
     <div class="wrapper">
-        <swiper :options="swiperOption">
+        <swiper :options="swiperOption" v-if="swiperList&&swiperList.length">
             <swiper-slide :key="index" v-for="(swiperImg,index) in swiperList">
                 <img class="swiper-img" :src="swiperImg.imgUrl" let="">
             </swiper-slide>
@@ -15,6 +15,11 @@
 
     export default {
         name: "",
+        props: {
+            swiperList: {
+                type: Array,
+            }
+        },
         data() {
             return {
                 swiperOption: {
@@ -22,12 +27,7 @@
                     speed: 1000,
                     autoplay: 3000,
                     pagination: '.swiper-pagination'
-                },
-                swiperList: [{
-                    imgUrl: 'https://imgs.qunarzz.com/vc/d6/f8/02/1f926edfd7e2d040c6063b031b.jpg'
-                }, {
-                    imgUrl: 'https://imgs.qunarzz.com/ftejia/1808/4a/2c3df86d3fc9ae.jpg'
-                }]
+                }
             }
         },
         components: {
@@ -39,6 +39,9 @@
 
 <style lang="stylus" type="text/stylus" scoped>
     /*scoped 该属性是定义了该css都是私有的,如果要修改到别的样子,则需要用>>>做穿透*/
+    .wrapper >>> .swiper-pagination-bullet-active
+        background #fff !important
+
     .wrapper >>> .swiper-img
         width 100%
 
