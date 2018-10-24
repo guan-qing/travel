@@ -115,7 +115,7 @@
             right 0
             bottom 0
             height .44rem
-            line-height .44rem
+            line-height .64rem
             text-align center
             color $darkTextColor
             ellipsis()
