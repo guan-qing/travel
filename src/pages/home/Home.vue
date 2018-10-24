@@ -1,6 +1,6 @@
 <template>
     <div>
-        <Header></Header>
+        <home-header></home-header>
         <home-swiper></home-swiper>
         <home-icons></home-icons>
         <home-recommend></home-recommend>
@@ -9,7 +9,7 @@
 </template>
 
 <script>
-    import Header from './components/Header';
+    import HomeHeader from './components/Header';
     import HomeSwiper from './components/Swiper';
     import HomeIcons from './components/Icons';
     import HomeRecommend from './components/Recommend';
@@ -17,12 +17,17 @@
 
     export default {
         name: "",
+        data() {
+            return {
+                obj: [{id: 1, name: '测试1'}, {id: 2, name: '测试2'}, {id: 3, name: '测试3'}]
+            }
+        },
         components: {
-            Header,
+            HomeHeader,
             HomeSwiper,
             HomeIcons,
             HomeRecommend,
-            HomeWeekend
+            HomeWeekend,
         }
     }
 </script>
