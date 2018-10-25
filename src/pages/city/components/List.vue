@@ -30,11 +30,11 @@
                     </div>
                 </div>
             </div>
-
         </div>
-        <ul class="shortcut">
+        <ul class="shortcut" @touchstart.stop.prevent="onShortcutTouchStart"
+            @touchmove.stop.prevent="onShortcutTouchMove">
             <li v-for="(citie,index) in shortcutList" :class="{'current':currentIndex===index}"
-                @click="toShortCut(index)">
+                @click="toShortCut(index)" :data-index="index">
                 {{citie}}
             </li>
         </ul>
@@ -43,21 +43,29 @@
 
 <script>
     import Scroll from 'common/scroll/Scroll'
-    import axios from 'axios'
 
+    const ANCHOR_HEIGHT = 20
     export default {
         name: "",
+        props: {
+            hotCities: {
+                type: Array
+            },
+            cities: {
+                type: Array
+            },
+            tests: Object
+        },
         data() {
             return {
-                hotCities: [],
-                cities: [],
                 scrollY: -1,
                 currentIndex: 0,
-                diff: -1
+                diff: -1,
+                timer: null
             }
         },
         created() {
-            this.initCity();
+            this.touch = [];
         },
         computed: {
             shortcutList() {
@@ -67,39 +75,52 @@
             },
         },
         methods: {
-            initCity() {
-                axios.get('/api/city.json').then((res) => {
-                    this.hotCities = res.data.data.hotCities;
-                    this.cities = this.fromData(res.data.data.cities);
-                })
-            },
             toShortCut(index) {
+                console.log(index);
                 this.currentIndex = index;
-                this.$refs.cityList.scrollToElement(this.$refs.cityLi[index], 500);
+                this._scrollTo(index);
             },
             scroll(pos) {
                 this.scrollY = pos.y;
-
             },
-            fromData(data) {
-                let map = {};
-                let ret = [];//用于放是字母的数组
-                for (let key in data) {
-                    if (key.match(/[a-zA-Z]/)) {
-                        if (!map[key]) {
-                            map[key] = {
-                                title: key,
-                                items: data[key]
-                            }
-                        }
-                        ret.push(map[key]);
-                    }
+            onShortcutTouchStart(e) {
+                let anchorIndex = this.getData(e.target, 'index');
+                let firstTouch = e.touches[0];
+                this.touch.y1 = firstTouch.pageY;
+                this.touch.anchorIndex = anchorIndex;
+                this._scrollTo(anchorIndex);
+            },
+            onShortcutTouchMove(e) {
+                //this.timer用于性能优化
+                if (this.timer) {
+                    clearTimeout(this.timer);
                 }
-                // 对数组进行排序
-                return ret.sort((a, b) => {
-                    //将A-Z转换在成Unicode编码再进行对比排序
-                    return a.title.charCodeAt(0) - b.title.charCodeAt(0);
-                });
+                this.timer = setTimeout(() => {
+                    let firstTouch = e.touches[0];
+                    this.touch.y2 = firstTouch.pageY;
+                    let delta = (this.touch.y2 - this.touch.y1) / ANCHOR_HEIGHT | 0;
+                    let anchorIndex = parseInt(this.touch.anchorIndex) + delta;
+                    this._scrollTo(anchorIndex);
+                }, 16)
+            },
+            getData(el, name, val) {
+                const prefix = "data-";
+                name = prefix + name;
+                if (val) {
+                    return el.setAttribute(name, val);
+                } else {
+                    return el.getAttribute(name);
+                }
+            },
+            _scrollTo(index) {
+                if (!index && index !== 0) return;
+                if (index < 0) {
+                    index = 0;
+                } else if (index > this.listHeight - 2) {
+                    index = this.listHeight - 2;
+                }
+                this.scrollY = -this.listHeight[index];
+                this.$refs.cityList.scrollToElement(this.$refs.cityLi[index], 100);
             },
             _calculateHeight() {
                 this.listHeight = [];
@@ -142,6 +163,7 @@
                 }
                 // 当滚动到低部,且-newY大于最后一个元素的上限
                 this.currentIndex = listHeight.length - 2;
+                console.log(this.currentIndex);
             },
             // diff(newVal) {
             //     let fixedTop = (newVal > 0 && newVal < TITLE_HEIGHT) ? newVal - TITLE_HEIGHT : 0;
@@ -181,8 +203,8 @@
             right 0
             li
                 line-height .4rem
-                background #ccc
                 text-align center
+                color #00bcd4
             .current
                 color #fff
                 background #00bcd4
