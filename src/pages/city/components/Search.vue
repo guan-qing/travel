@@ -6,7 +6,7 @@
         </div>
         <Scroll class="search-content" v-show="keyword">
             <ul>
-                <li class="search-item" v-for="item in list">{{item.name}}</li>
+                <li @click="handleCityClick(item.name)" class="search-item" v-for="item in list">{{item.name}}</li>
                 <li class="search-item" v-show="!list.length">没有找到匹配数据</li>
             </ul>
         </Scroll>
@@ -15,6 +15,7 @@
 
 <script>
     import Scroll from 'common/scroll/Scroll'
+    import {mapMutations} from 'vuex'
 
     export default {
         name: "",
@@ -45,6 +46,14 @@
                     this.list = resilt;
                 }, 100)
             }
+        },
+        methods: {
+            handleCityClick(name) {
+                this.keyword = '';
+                this.$router.back();
+                this.changeCity(name);
+            },
+            ...mapMutations(['changeCity'])
         },
         components: {Scroll}
     }

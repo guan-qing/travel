@@ -7,8 +7,8 @@ import 'styles/reset.css'
 import 'styles/border.css'
 import 'styles/iconfont.css'
 import 'swiper/dist/css/swiper.css'
-
 import VueAwesomeSwiper from 'vue-awesome-swiper';
+import store from './store';
 
 Vue.set(VueAwesomeSwiper);
 Vue.config.productionTip = false
@@ -17,5 +17,6 @@ Vue.config.productionTip = false
 new Vue({
     el: '#app',
     router,
+    store,
     render: h => h(App)
 })
