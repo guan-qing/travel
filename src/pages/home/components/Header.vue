@@ -11,19 +11,19 @@
 </template>
 
 <script>
+    import {mapState} from 'vuex';
+
     export default {
         name: "Header",
-        props: {
-            city: {
-                type: String
-            }
+        computed: {
+            ...mapState(['city'])
         }
     }
 </script>
 
 <style lang="stylus" type="text/stylus" scoped>
     @import "~styles/varibles.styl";
-
+    @import "~styles/mixins.styl";
     .header
         display flex
         background $bgColor
@@ -51,6 +51,7 @@
             float right
             text-align center
             color #fff
+            ellipsis()
             .iconfont
                 font-size .24rem
                 vertical-align top

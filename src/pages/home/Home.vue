@@ -1,6 +1,6 @@
 <template>
     <div>
-        <home-header :city="homes.city"></home-header>
+        <home-header></home-header>
         <home-swiper :swiperList="homes.swiperList"></home-swiper>
         <home-icons :iconList="homes.iconList"></home-icons>
         <home-recommend :recommendList="homes.recommendList"></home-recommend>
@@ -15,12 +15,10 @@
     import HomeRecommend from './components/Recommend';
     import HomeWeekend from './components/Weekend';
     import axios from 'axios';
-
     export default {
         name: "",
         data() {
             return {
-                city: '',
                 homes: {},
             }
         },

@@ -6,7 +6,7 @@
                 <div class="button-list">
                     <div class="button-wrapper">
                         <div class="button">
-                            广州
+                            {{city}}
                         </div>
                     </div>
                 </div>
@@ -14,7 +14,7 @@
             <div class="area">
                 <div class="title border-topbottom">热门城市</div>
                 <div class="button-list">
-                    <div class="button-wrapper" v-for="hotCitie in hotCities">
+                    <div @click="handleCityClick(hotCitie.name)" class="button-wrapper" v-for="hotCitie in hotCities">
                         <div class="button">
                             {{hotCitie.name}}
                         </div>
@@ -25,7 +25,7 @@
             <div class="area">
                 <div v-for="(citie,index) in cities" ref="cityLi">
                     <div class="title border-topbottom">{{citie.title}}</div>
-                    <div class="item-list" v-for="item in citie.items">
+                    <div class="item-list" @click="handleCityClick(item.name)" v-for="item in citie.items">
                         <div class="item border-bottom">{{item.name}}</div>
                     </div>
                 </div>
@@ -38,11 +38,17 @@
                 {{citie}}
             </li>
         </ul>
+        <transition name="fade">
+            <div class="toTop" v-show="showToTop" @click="toTop">
+                <div>顶部</div>
+            </div>
+        </transition>
     </scroll>
 </template>
 
 <script>
     import Scroll from 'common/scroll/Scroll'
+    import {mapState, mapMutations} from 'vuex';
 
     const ANCHOR_HEIGHT = 20
     export default {
@@ -61,7 +67,8 @@
                 scrollY: -1,
                 currentIndex: 0,
                 diff: -1,
-                timer: null
+                timer: null,
+                showToTop: false
             }
         },
         created() {
@@ -73,15 +80,20 @@
                     return group.title.substr(0, 1);
                 });
             },
+            ...mapState(['city'])
         },
         methods: {
             toShortCut(index) {
-                console.log(index);
                 this.currentIndex = index;
                 this._scrollTo(index);
             },
             scroll(pos) {
                 this.scrollY = pos.y;
+            },
+            handleCityClick(name) {
+                this.changeCity(name);
+                //this.$store.commit('changeCity', name);
+                this.$router.back();
             },
             onShortcutTouchStart(e) {
                 let anchorIndex = this.getData(e.target, 'index');
@@ -102,6 +114,11 @@
                     let anchorIndex = parseInt(this.touch.anchorIndex) + delta;
                     this._scrollTo(anchorIndex);
                 }, 16)
+            },
+            toTop() {
+                this.currentIndex = 0;
+                this.showToTop = false;
+                this.$refs.cityList.scrollTo(0, 0);
             },
             getData(el, name, val) {
                 const prefix = "data-";
@@ -136,7 +153,8 @@
                     }
                     this.listHeight.push(height);
                 }
-            }
+            },
+            ...mapMutations(['changeCity'])
         },
         watch: {
             cities() {
@@ -151,6 +169,13 @@
                     this.currentIndex = 0;
                     return;
                 }
+                //如果滚动到离顶部有500的距离则显示回到顶部按钮
+                if (newY < -500 && !this.showToTop) {
+                    this.showToTop = true;
+                } else if (newY > -500 && this.showToTop) {
+                    this.showToTop = false;
+                }
+
                 // 当在中间部分滚动
                 for (let i = 0; i < listHeight.length - 1; i++) {
                     let height1 = listHeight[i];
@@ -199,7 +224,7 @@
         bottom 0
         .shortcut
             position absolute
-            top 15%
+            top 10%
             right 0
             li
                 line-height .4rem
@@ -208,6 +233,17 @@
             .current
                 color #fff
                 background #00bcd4
+        .toTop
+            position absolute
+            right .5rem
+            bottom .5rem
+            width .8rem
+            height .8rem
+            line-height .8rem
+            text-align center
+            background #00BCD4
+            border-radius 50%
+            color #fff;
 
     .title
         line-height .5rem
@@ -233,5 +269,15 @@
         .item
             padding-left .2rem
             line-height .76rem
+
+    .fade-enter-active, .fade-leave-active
+        transition: all 0.5s
+        opacity: 1
+        transform: translate3d(0, 0, 0)
+
+    .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */
+        opacity: 0;
+        transform: translate3d(0, 100%, 0)
+
 
 </style>
