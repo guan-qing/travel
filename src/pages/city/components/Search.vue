@@ -2,10 +2,12 @@
     <div>
         <div class="search">
             <input v-model="keyword" class="search-input" type="text" placeholder="输入城市名或拼音">
+            <span @click="keyword=''" v-show="keyword" class="iconfont">&#xe625;</span>
         </div>
         <Scroll class="search-content" v-show="keyword">
             <ul>
                 <li class="search-item" v-for="item in list">{{item.name}}</li>
+                <li class="search-item" v-show="!list.length">没有找到匹配数据</li>
             </ul>
         </Scroll>
     </div>
@@ -54,6 +56,7 @@
         height .72rem
         background $bgColor
         padding .1rem
+        position relative
         .search-input
             box-sizing border-box
             width 100%
@@ -63,6 +66,13 @@
             border-radius .06rem
             color #666
             padding 0 .1rem
+        .iconfont
+            position absolute
+            right .3rem
+            font-size .2rem
+            top .3rem
+            &:hover
+                color red
 
     .search-content
         position absolute
