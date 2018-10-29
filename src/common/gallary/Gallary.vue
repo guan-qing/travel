@@ -1,7 +1,7 @@
 <template>
     <div class="container" @click="handleGallaryClick">
         <div class="wrapper">
-            <swiper :options="swiperOption" v-if="imgs.length">
+            <swiper :options="swiperOption" v-if="imgs.length>0">
                 <swiper-slide v-for="(item,index) in imgs" :key="index">
                     <img class="swiper-img" :src="item" let="">
                 </swiper-slide>
@@ -47,7 +47,7 @@
 </script>
 
 <style scoped lang="stylus" type="text/stylus">
-    .container >>> .swiper-pagination
+    .swiper-container
         overflow inherit
 
     .container
@@ -65,7 +65,7 @@
             background #fff
             height 0
             width 100%
-            padding-bottom 55%
+            padding-bottom 100%
             .swiper-pagination
                 color #fff
                 bottom -1rem

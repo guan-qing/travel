@@ -39,7 +39,10 @@
             }
         },
         activated() {
-            window.addEventListener('scroll', this.handleScroll)
+            window.addEventListener('scroll', this.handleScroll);
+        },
+        deactivated() {
+            window.removeEventListener('scroll', this.handleScroll);
         }
     }
 </script>
@@ -72,6 +75,7 @@
         top 0
         left 0
         right 0
+        z-index 2
 
         .header-left
             width .64rem
